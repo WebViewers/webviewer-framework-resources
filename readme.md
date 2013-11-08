@@ -30,3 +30,7 @@ webviewers github repostitory.
             <div id="webviewer"></div>
           </body>
         </html>
+
+# WebViewer Content
+
+The WebViewer should have the file `renderjs-stub.js` which is provided.
