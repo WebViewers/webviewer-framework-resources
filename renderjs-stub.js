@@ -1,18 +1,19 @@
 /* -*- Mode: js; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
-/*! webviewer-stub v0.1  */
+/*! renderjs-stub v0.1  */
 /*global window, document */
 ;(function (window, document) {
   "use strict";
   if (window.self === window.top) {
     return;
   }
+  var readyList = [];
+  var stubReady = function (func) { readyList.push(func); };
   var rJSStub = function (window) {
-    return { ready: function (func) { readyList.push(func); } };
+    return { ready: stubReady };
   };
   var rJS = function (window) {
     return rJSStub(window);
   };
-  var readyList = [];
   var cookie = ''+Math.random();
   var onMessage = function (event) {
     var data;
@@ -36,10 +37,14 @@
     if (!scr) {
       throw new Error("RenderJS not provided");
     }
-    scr.onload = function () {
+    var check = function () {
       var root = window.renderJS(window);
-      if (root.ready === readyList.push) {
+      if (root.ready === stubReady) {
         throw new Error("RenderJS not loaded");
+      }
+      if (rJSStub === window.rJS) {
+        // already called.
+        return;
       }
       rJSStub = window.rJS;
       for (var x in window.rJS) {
@@ -48,6 +53,11 @@
       for (var i = 0; i < readyList.length; i++) {
         root.ready(readyList[i]);
       }
+    };
+    if (document.addEventListener) {
+      document.addEventListener('renderjs:ready', check);
+    } else {
+      document.attachEvent('renderjs:ready', check);
     }
   }
   if (window.addEventListener) {
